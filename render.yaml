@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: bulksmssender
+    env: node
+    plan: free
+    branch: main
+    rootDir: .
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: KITE_USERNAME
+        sync: false
+      - key: KITE_API_KEY
+        sync: false
+      - key: KITE_SENDER_ID
+        sync: false
+      - key: KITE_TEMPLATE_ID
+        sync: false
+      - key: PORT
+        value: "10000"
