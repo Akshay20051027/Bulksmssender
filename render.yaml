@@ -3,7 +3,7 @@ services:
     name: bulksmssender
     env: node
     plan: free
-    branch: main
+    branch: master
     rootDir: .
     buildCommand: npm install
     startCommand: npm start
