@@ -17,9 +17,22 @@ requiredEnv.forEach((key) => {
   }
 });
 
-// Formats message to match the approved DLT template
-function buildMessage({ name, thriftBalance, loanBalance, suretySignatures, dividend = 0 }) {
-  return `Dear ${name}, your Thrift Balance ${thriftBalance} Loan Balance ${loanBalance}, Surety Signatures ${suretySignatures} Dividend ${dividend}. --- The Vignan Employees Mutually Aided Co-operative Thrift & Credit Society Ltd.`;
+const societyName =
+  process.env.SOCIETY_NAME || 'The Vignan Employees Mutually Aided Co-operative Thrift & Credit Society Ltd.';
+
+// Formats message to match the updated DLT template with monthly deductions
+function buildMessage({
+  name,
+  thriftBalance,
+  loanBalance,
+  suretySignatures,
+  dividend = 0,
+  monthlyThriftContribution,
+  monthlyLoanRepayment,
+  monthlyInterestAmount,
+  totalMonthlyDeduction,
+}) {
+  return `Dear ${name}, Greetings from the official website of ${societyName}. This is to inform you that, as per the latest records available on the Society's website, your account details are as follows: Thrift Balance – ₹${thriftBalance}; Loan Balance – ₹${loanBalance}; Surety Signatures – ${suretySignatures}; Dividend – ₹${dividend}. Your monthly deduction details include Monthly Thrift Contribution – ₹${monthlyThriftContribution}, Monthly Loan Repayment – ₹${monthlyLoanRepayment}, Monthly Interest Amount – ₹${monthlyInterestAmount}, making the Total Monthly Deduction – ₹${totalMonthlyDeduction}. Kindly review the above information, and for any clarification or further assistance, please contact the Society Office. Thank you for your continued association with the Society.`;
 }
 
 async function sendKiteSms({ mobile, message }) {
@@ -41,13 +54,49 @@ async function sendKiteSms({ mobile, message }) {
 
 app.post('/api/send-sms', async (req, res) => {
   try {
-    const { name, mobile, thriftBalance, loanBalance, suretySignatures, dividend = 0 } = req.body;
+    const {
+      name,
+      mobile,
+      thriftBalance,
+      loanBalance,
+      suretySignatures,
+      dividend = 0,
+      monthlyThriftContribution,
+      monthlyLoanRepayment,
+      monthlyInterestAmount,
+      totalMonthlyDeduction,
+    } = req.body;
 
-    if (!mobile || !name || thriftBalance === undefined || loanBalance === undefined || suretySignatures === undefined) {
-      return res.status(400).json({ error: 'name, mobile, thriftBalance, loanBalance, and suretySignatures are required' });
+    const requiredFields = [
+      name,
+      mobile,
+      thriftBalance,
+      loanBalance,
+      suretySignatures,
+      monthlyThriftContribution,
+      monthlyLoanRepayment,
+      monthlyInterestAmount,
+      totalMonthlyDeduction,
+    ];
+
+    if (requiredFields.some((v) => v === undefined || v === null || v === '')) {
+      return res.status(400).json({
+        error:
+          'name, mobile, thriftBalance, loanBalance, suretySignatures, monthlyThriftContribution, monthlyLoanRepayment, monthlyInterestAmount, and totalMonthlyDeduction are required',
+      });
     }
 
-    const message = buildMessage({ name, thriftBalance, loanBalance, suretySignatures, dividend });
+    const message = buildMessage({
+      name,
+      thriftBalance,
+      loanBalance,
+      suretySignatures,
+      dividend,
+      monthlyThriftContribution,
+      monthlyLoanRepayment,
+      monthlyInterestAmount,
+      totalMonthlyDeduction,
+    });
     const messageId = await sendKiteSms({ mobile, message });
 
     // Save messageId into your persistence layer for traceability (omitted here)

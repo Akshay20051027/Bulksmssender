@@ -157,6 +157,22 @@
         Dividend (optional)
         <input name="dividend" type="number" step="0.01" placeholder="0" />
       </label>
+      <label>
+        Monthly Thrift Contribution
+        <input name="monthlyThriftContribution" type="number" step="0.01" placeholder="0" required />
+      </label>
+      <label>
+        Monthly Loan Repayment
+        <input name="monthlyLoanRepayment" type="number" step="0.01" placeholder="0" required />
+      </label>
+      <label>
+        Monthly Interest Amount
+        <input name="monthlyInterestAmount" type="number" step="0.01" placeholder="0" required />
+      </label>
+      <label>
+        Total Monthly Deduction
+        <input name="totalMonthlyDeduction" type="number" step="0.01" placeholder="0" required />
+      </label>
       <div class="actions">
         <button class="primary" type="submit">Send SMS</button>
         <button class="ghost" type="reset">Clear</button>
@@ -181,6 +197,10 @@
       payload.loanBalance = Number(payload.loanBalance);
       payload.suretySignatures = Number(payload.suretySignatures);
       payload.dividend = payload.dividend ? Number(payload.dividend) : 0;
+      payload.monthlyThriftContribution = Number(payload.monthlyThriftContribution);
+      payload.monthlyLoanRepayment = Number(payload.monthlyLoanRepayment);
+      payload.monthlyInterestAmount = Number(payload.monthlyInterestAmount);
+      payload.totalMonthlyDeduction = Number(payload.totalMonthlyDeduction);
 
       try {
         const res = await fetch('/api/send-sms', {
